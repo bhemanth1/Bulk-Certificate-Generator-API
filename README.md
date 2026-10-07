@@ -69,6 +69,31 @@ flowchart LR
 
 ---
 
+## Project Structure
+
+```text
+Bulk_Certificate_Generator_API/
+├── app/
+│   ├── __init__.py
+│   └── main.py              # FastAPI app, SQLAlchemy models, PDF generator & API endpoints
+├── assets/
+│   └── sample_certificate.png # Rendered sample PDF certificate output image
+├── data/                    # Storage directory for SQLite database & generated PDFs
+│   ├── certificates/        # Generated PDF files directory
+│   └── certificates.db      # SQLite database file
+├── tests/
+│   └── test_api.py          # Pytest suite covering all required workflow cases
+├── .github/
+│   └── workflows/           # GitHub Actions CI/CD workflows
+├── .gitignore               # Git ignore rules for virtualenv, cache & database
+├── Bulk_Certificate_Generator_Backend_Assignment.docx # Project assignment requirements document
+├── README.md                # Project documentation, flowcharts, setup & API guide
+└── requirements.txt         # Project Python dependencies
+```
+
+---
+
+
 ## Getting Started
 
 ### 1. Prerequisites
