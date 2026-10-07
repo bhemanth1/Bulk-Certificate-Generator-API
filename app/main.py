@@ -5,13 +5,13 @@ import uuid
 from contextlib import asynccontextmanager
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator, Generator, Optional
 
 from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, status
 from fastapi.responses import FileResponse
 from pydantic import BaseModel, EmailStr, Field
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import landscape, A4
+from reportlab.lib.pagesizes import A4, landscape
 from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
 from sqlalchemy import DateTime, ForeignKey, Integer, String, create_engine, select
@@ -53,8 +53,8 @@ class Certificate(Base):
     recipient_name: Mapped[str] = mapped_column(String(160))
     recipient_email: Mapped[str] = mapped_column(String(254))
     status: Mapped[str] = mapped_column(String(20), default="queued")
-    file_path: Mapped[str | None] = mapped_column(String, nullable=True)
-    error: Mapped[str | None] = mapped_column(String, nullable=True)
+    file_path: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    error: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     job: Mapped[GenerationJob] = relationship(back_populates="certificates")
 
 
@@ -76,8 +76,9 @@ class CertificateSummary(BaseModel):
     recipient_name: str
     recipient_email: str
     status: str
-    error: str | None
-    download_url: str | None
+    error: Optional[str]
+    download_url: Optional[str]
+
 
 
 class JobResponse(BaseModel):
@@ -109,8 +110,9 @@ def get_session() -> Generator[Session, None, None]:
 
 
 # Download URL generator
-def certificate_url(certificate: Certificate) -> str | None:
+def certificate_url(certificate: Certificate) -> Optional[str]:
     return f"/certificates/{certificate.id}/download" if certificate.status == "completed" else None
+
 
 
 # Formats job data for API response
